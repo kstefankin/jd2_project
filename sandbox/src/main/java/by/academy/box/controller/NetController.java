@@ -2,7 +2,9 @@ package by.academy.box.controller;
 
 
 
+import by.academy.box.pojos.Message;
 import by.academy.box.pojos.User;
+import by.academy.box.service.MessageService;
 import by.academy.box.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,9 @@ public class NetController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageService messageService;
 
 
     @GetMapping("/")
@@ -75,10 +80,21 @@ public class NetController {
 
     }
 
+    @GetMapping("/write")
+    public String messageForm (Model model) {
+        model.addAttribute("message", new Message());
+        return "writemessage";
+    }
 
+    @PostMapping("/newMessage")
+    public String newMessage (@ModelAttribute("message") Message message) {
 
+        message.setSurnameFrom("test");
+        message.setSurnameTo("ttttttrrrrr");
+        messageService.saveMessage(message);
 
-
+        return "startpage";
+    }
 
 
 
