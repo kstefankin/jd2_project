@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 
@@ -27,6 +28,11 @@ public class NetController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private HttpSession httpSession;
+
+
 
 
     @GetMapping("/")
@@ -50,6 +56,9 @@ public class NetController {
     @PostMapping("/addNewMan")
     public String addNewMan(@ModelAttribute("user") User user) {
 
+        String currentUserSurname=user.getSurname();
+        httpSession.setAttribute("UserSurname",currentUserSurname);
+
         userService.saveUser(user);
 
         return "successpage";
@@ -59,10 +68,10 @@ public class NetController {
     public String showHomePage (@ModelAttribute("user") User user, Model model) {
 
         String login=user.getLogin();
-
-
-        model.addAttribute("user" ,userService.getUser(login));
-
+        User persistentuser=userService.getUser(login);
+        model.addAttribute("user",persistentuser);
+        String currentUserSurname=persistentuser.getSurname();
+        httpSession.setAttribute("UserSurname",currentUserSurname);
         return "homepage";
     }
 
@@ -89,13 +98,21 @@ public class NetController {
     @PostMapping("/newMessage")
     public String newMessage (@ModelAttribute("message") Message message) {
 
-        message.setSurnameFrom("test");
-        message.setSurnameTo("ttttttrrrrr");
+        message.setSurnameFrom((String) httpSession.getAttribute("UserSurname"));
+
         messageService.saveMessage(message);
 
         return "startpage";
     }
 
+    @GetMapping("/mymessages")
+    public String showMyMessages(Model model) {
+        String surname=(String) httpSession.getAttribute("UserSurname");
+       // List<Message> messages = messageService.findAll();
+        List<Message> messages = messageService.findBySurnameTo(surname);
+        model.addAttribute("messages", messages);
+        return "mymessages";
 
+    }
 
 }

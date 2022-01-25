@@ -32,10 +32,17 @@
 
 
                    <form th:method="POST" th:action="@{/newMessage}" th:object="${message}">
-                         <div class="mb-3">
+
+                       <div class="mb-3">
+                           <label for="surnameTo" class="form-label">To user</label>
+                           <input type="text" class="form-control" th:field="*{surnameTo}" id="surnameTo">
+                       </div>
+
+
+                       <div class="mb-3">
                             <label for="body" class="form-label">Write your message</label>
                             <input type="text" class="form-control" th:field="*{body}" id="body">
-                         </div>
+                       </div>
 
 
 
